@@ -50,13 +50,13 @@ const sketch = (p: p5) => {
         }
 
         // 画面上に個体の画像を表示
-        genomes[0].show(image_width, 0);
         new_genomes.forEach((genome, i) => {
             genome.show(image_width * i, image_height);
         })
 
         // 評価する
         p.loadPixels();
+        img.loadPixels();
         for (let i = 0; i < population; i++) {
             new_genomes[i].fitness = fitness(img.pixels, get_image_pixels(p.pixels, i));
         }
@@ -87,6 +87,7 @@ const sketch = (p: p5) => {
             return fitness_a - fitness_b;
         })
         genomes.splice(population, genomes.length - population);
+        genomes[0].show(image_width, 0);
         console.log("after fitness: ", genomes[0].fitness);
     }
 
@@ -209,9 +210,7 @@ const sketch = (p: p5) => {
     const fitness = (img1: number[], img2: number[]): number => {
         let sum = 0;
         for (let i = 0; i < img1.length; i += 4) {
-            const [h1, s1, l1] = rgbToHsl(img1[i], img1[i + 1], img1[i + 2]);
-            const [h2, s2, l2] = rgbToHsl(img2[i], img2[i + 1], img2[i + 2]);
-            sum += Math.abs(h1 - h2) ^ 2;
+            sum += Math.abs(img1[i] - img2[i]) ^ 2;
         }
         return sum;
     }
