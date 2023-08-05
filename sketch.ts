@@ -8,7 +8,7 @@ const sketch = (p: p5) => {
     let img: p5.Image;
     let image_width: number;
     let image_height: number;
-    const genomes: Genome[] = [];
+    let genomes: Genome[] = [];
 
     p.setup = () => {
         p.background(255);
@@ -33,36 +33,40 @@ const sketch = (p: p5) => {
         // 正解画像を表示
         p.image(img, 0, 0);
 
-        // 画面上に個体の画像を表示
-        genomes.forEach((genome, i) => {
-            genome.show(image_width * i, image_height);
-        })
-
         // GAを実行
-        const new_genome: Genome[] = [];
+        const new_genomes: Genome[] = [];
         for (let i = 0; i < population; i++) {
             // 選択
             const parent_idx1 = Math.floor(Math.random() * population);
             const parent_idx2 = Math.floor(Math.random() * population);
 
             // 交叉
-            new_genome.push(genomes[parent_idx1].crossover(genomes[parent_idx2]));
+            new_genomes.push(genomes[parent_idx1].crossover(genomes[parent_idx2]));
 
             // 突然変異
-            new_genome[i].mutation();
+            new_genomes[i].mutation();
+        }
+
+        // 画面上に個体の画像を表示
+        new_genomes.forEach((genome, i) => {
+            genome.show(image_width * i, image_height);
+        })
+
+        // 評価する
+        p.loadPixels();
+        for (let i = 0; i < population; i++) {
+            new_genomes[i].fitness = fitness(img.pixels, get_image_pixels(p.pixels, i));
         }
 
         // 次世代を選択
-        genomes.concat(new_genome);
-        p.loadPixels();
-        img.loadPixels();
+        genomes = genomes.concat(new_genomes);
         genomes.sort((a, b) => {
-            const img_a = get_image_pixels(p.pixels, genomes.indexOf(a));
-            const img_b = get_image_pixels(p.pixels, genomes.indexOf(b));
-            return fitness(img.pixels, img_a) - fitness(img.pixels, img_b);
+            const fitness_a = a.fitness === null ? 999999999 : a.fitness;
+            const fitness_b = b.fitness === null ? 999999999 : b.fitness;
+            return fitness_a - fitness_b;
         })
         genomes.splice(population, genomes.length - population);
-        console.log("fitness: ", fitness(img.pixels, get_image_pixels(p.pixels, 0)));
+        console.log("after fitness: ", genomes[0].fitness);
     }
 
     const get_image_pixels = (img: number[], idx: number): number[] => {
@@ -99,6 +103,7 @@ const sketch = (p: p5) => {
 
     class Genome {
         lines: Lines;
+        fitness: number | null = null;
 
         constructor(_lines?: Lines) {
             if (_lines === undefined) {
