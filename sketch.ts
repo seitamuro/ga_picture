@@ -62,8 +62,6 @@ const sketch = (p: p5) => {
         }
 
         const img1 = get_image_pixels(p.pixels, 0);
-        console.log("img1.length: ", img1.length);
-        console.log("image_width, image_height: ", image_width, image_height);
         for (let i = 0; i < image_width; i++) {
             for (let j = 0; j < image_height; j++) {
                 const pixelIndex = (j * image_width * population + i) * 4;
@@ -113,8 +111,6 @@ const sketch = (p: p5) => {
             }*/
             _img.push(img[indexes[i]]);
         }
-        console.log("img: ", img);
-        console.log("_img: ", _img);
         return _img;
     }
 
