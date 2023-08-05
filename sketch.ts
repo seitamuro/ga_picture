@@ -1,6 +1,6 @@
 import p5 from 'p5'
 
-import target_image from './sample.jpg'
+import target_image from './red.jpg'
 
 const population = 10;
 
@@ -83,7 +83,7 @@ const sketch = (p: p5) => {
     }
 
     type Tuple<T, L extends number, A extends unknown[] = []> = A['length'] extends L ? A : Tuple<T, L, [T, ...A]>;
-    type Lines = Tuple<Line, 100>; // p5.Vectorの100要素のタプル型
+    type Lines = Tuple<Line, 500>; // p5.Vectorの100要素のタプル型
 
     class Line {
         start: p5.Vector;
@@ -109,7 +109,7 @@ const sketch = (p: p5) => {
 
         create_random_lines(): Lines {
             const lines: Line[] = [];
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 500; i++) {
                 const start = p.createVector(Math.random(), Math.random());
                 const end = p.createVector(Math.random(), Math.random());
                 const color = p.color(Math.random() * 255, Math.random() * 255, Math.random() * 255);
@@ -140,13 +140,13 @@ const sketch = (p: p5) => {
 
         mutation() {
             this.lines.forEach((line) => {
-                if (Math.random() < 0.3) {
+                if (Math.random() < 0.01) {
                     line.start = p.createVector(Math.random(), Math.random());
                 }
-                if (Math.random() < 0.3) {
+                if (Math.random() < 0.01) {
                     line.end = p.createVector(Math.random(), Math.random());
                 }
-                if (Math.random() < 0.3) {
+                if (Math.random() < 0.01) {
                     line.color = p.color(Math.random() * 255, Math.random() * 255, Math.random() * 255);
                 }
             })
