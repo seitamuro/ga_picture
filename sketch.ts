@@ -30,7 +30,7 @@ const sketch = (p: p5) => {
         console.log(genomes[0])
     }
 
-    type Tuple<T, L extends number, A extends any[] = []> = A['length'] extends L ? A : Tuple<T, L, [T, ...A]>;
+    type Tuple<T, L extends number, A extends unknown[] = []> = A['length'] extends L ? A : Tuple<T, L, [T, ...A]>;
     type Lines = Tuple<Line, 100>; // p5.Vectorの100要素のタプル型
 
     class Line {
@@ -87,7 +87,7 @@ const sketch = (p: p5) => {
         }
 
         show(x: number, y: number) {
-            this.lines.forEach((line, i) => {
+            this.lines.forEach((line) => {
                 p.stroke(line.color);
                 p.line(x + line.start.x * image_width, y + line.start.y * image_height, x + line.end.x * image_width, y + line.end.y * image_height);
             })
