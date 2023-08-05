@@ -2,6 +2,8 @@ import p5 from 'p5'
 
 import target_image from './sample.jpg'
 
+const population = 10;
+
 const sketch = (p: p5) => {
     let img: p5.Image;
     let image_width: number;
@@ -9,25 +11,75 @@ const sketch = (p: p5) => {
     const genomes: Genome[] = [];
 
     p.setup = () => {
+        p.background(255);
         image_width = img.width;
         image_height = img.height;
-        p.createCanvas(image_width, image_height * 2);
-        genomes.push(new Genome());
-        genomes.push(new Genome());
-        genomes.push(new Genome());
-        genomes.push(new Genome());
-        genomes.push(new Genome());
-        genomes.push(new Genome());
+        p.createCanvas(image_width * population, image_height * 2);
+        for (let i = 0; i < population; i++) {
+            genomes.push(new Genome());
+        }
+        p.pixelDensity(1);
     }
 
     p.preload = () => {
-        img = p.loadImage(target_image)
+        img = p.loadImage(target_image);
+        img.loadPixels();
     }
 
     p.draw = () => {
+        // 画面をクリア
+        p.background(255);
+
+        // 正解画像を表示
         p.image(img, 0, 0);
-        genomes[0].show(0, image_height);
-        console.log(genomes[0])
+
+        // 画面上に個体の画像を表示
+        genomes.forEach((genome, i) => {
+            genome.show(image_width * i, image_height);
+        })
+
+        // GAを実行
+        const new_genome: Genome[] = [];
+        for (let i = 0; i < population; i++) {
+            // 選択
+            const parent_idx1 = Math.floor(Math.random() * population);
+            const parent_idx2 = Math.floor(Math.random() * population);
+
+            // 交叉
+            new_genome.push(genomes[parent_idx1].crossover(genomes[parent_idx2]));
+
+            // 突然変異
+            new_genome[i].mutation();
+        }
+
+        // 次世代を選択
+        genomes.concat(new_genome);
+        p.loadPixels();
+        img.loadPixels();
+        genomes.sort((a, b) => {
+            const img_a = get_image_pixels(p.pixels, genomes.indexOf(a));
+            const img_b = get_image_pixels(p.pixels, genomes.indexOf(b));
+            return fitness(img.pixels, img_a) - fitness(img.pixels, img_b);
+        })
+        genomes.splice(population, genomes.length - population);
+        console.log("fitness: ", fitness(img.pixels, get_image_pixels(p.pixels, 0)));
+    }
+
+    const get_image_pixels = (img: number[], idx: number): number[] => {
+        const _img: number[] = [];
+        const next_pixels = image_width * population * 4;
+        const base = next_pixels * image_height;
+        const indexes = [];
+        for (let i = 0; i < image_height; i++) {
+            const offset = base + idx * image_width * 4;
+            for (let j = offset + next_pixels * i; j < offset + next_pixels * i + image_width * 4; j++) {
+                indexes.push(j);
+            }
+        }
+        for (let i = 0; i < indexes.length; i++) {
+            _img.push(img[indexes[i]]);
+        }
+        return _img;
     }
 
     type Tuple<T, L extends number, A extends unknown[] = []> = A['length'] extends L ? A : Tuple<T, L, [T, ...A]>;
@@ -86,6 +138,20 @@ const sketch = (p: p5) => {
             return new Genome(lines as Lines);
         }
 
+        mutation() {
+            this.lines.forEach((line) => {
+                if (Math.random() < 0.3) {
+                    line.start = p.createVector(Math.random(), Math.random());
+                }
+                if (Math.random() < 0.3) {
+                    line.end = p.createVector(Math.random(), Math.random());
+                }
+                if (Math.random() < 0.3) {
+                    line.color = p.color(Math.random() * 255, Math.random() * 255, Math.random() * 255);
+                }
+            })
+        }
+
         show(x: number, y: number) {
             this.lines.forEach((line) => {
                 p.stroke(line.color);
@@ -105,6 +171,14 @@ const sketch = (p: p5) => {
         vector.setGreen(Math.max(0, Math.min(p.green(vector), 255)));
         vector.setBlue(Math.max(0, Math.min(p.blue(vector), 255)));
         return vector;
+    }
+
+    const fitness = (img1: number[], img2: number[]): number => {
+        let sum = 0;
+        for (let i = 0; i < img1.length; i++) {
+            sum += Math.abs(img1[i] - img2[i]);
+        }
+        return sum;
     }
 }
 
