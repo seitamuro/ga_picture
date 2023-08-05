@@ -61,7 +61,7 @@ const sketch = (p: p5) => {
             new_genomes[i].fitness = fitness(img.pixels, get_image_pixels(p.pixels, i));
         }
 
-        const img1 = get_image_pixels(p.pixels, 0);
+        /*const img1 = get_image_pixels(p.pixels, 0);
         for (let i = 0; i < image_width; i++) {
             for (let j = 0; j < image_height; j++) {
                 const pixelIndex = (j * image_width * population + i) * 4;
@@ -76,7 +76,7 @@ const sketch = (p: p5) => {
                 p.pixels[pixelIndex + 3] = img1[(j * image_width + i) * 4 + 3]; // Alpha
             }
         }
-        p.updatePixels();
+        p.updatePixels();*/
 
 
         // 次世代を選択
