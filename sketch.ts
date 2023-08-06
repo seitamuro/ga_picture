@@ -14,7 +14,7 @@ const sketch = (p: p5) => {
         p.background(0);
         image_width = img.width;
         image_height = img.height;
-        p.createCanvas(image_width * population, image_height * 2, p.P2D);
+        p.createCanvas(image_width * population, image_height * 3, p.P2D);
         for (let i = 0; i < population; i++) {
             genomes.push(new Genome());
         }
@@ -61,19 +61,21 @@ const sketch = (p: p5) => {
             new_genomes[i].fitness = fitness(img.pixels, get_image_pixels(p.pixels, i));
         }
 
-        /*const img1 = get_image_pixels(p.pixels, 0);
-        for (let i = 0; i < image_width; i++) {
-            for (let j = 0; j < image_height; j++) {
-                const pixelIndex = (j * image_width * population + i) * 4;
-                //p.pixels[pixelIndex + 0] = p.pixels[(i * image_width * 4 + j) * 4 + 0]; // Red
-                //p.pixels[pixelIndex + 1] = p.pixels[(i * image_width * 4 + j) * 4 + 1]; // Red
-                //p.pixels[pixelIndex + 2] = p.pixels[(i * image_width * 4 + j) * 4 + 2]; // Red
-                //p.pixels[pixelIndex + 3] = p.pixels[(i * image_width * 4 + j) * 4 + 3]; // Red
-                //console.log("rgba: ", img1[i * image_width + j + 0], img1[i * image_width + j + 1], img1[i * image_width + j + 2], img1[i * image_width + j + 3])
-                p.pixels[pixelIndex + 0] = img1[(j * image_width + i) * 4 + 0]; // Red
-                p.pixels[pixelIndex + 1] = img1[(j * image_width + i) * 4 + 1]; // Green
-                p.pixels[pixelIndex + 2] = img1[(j * image_width + i) * 4 + 2]; // Blue
-                p.pixels[pixelIndex + 3] = img1[(j * image_width + i) * 4 + 3]; // Alpha
+        /*for (let k = 0; k < population; k++) {
+            const _img = get_image_pixels(p.pixels, k);
+            for (let i = 0; i < image_width; i++) {
+                for (let j = 0; j < image_height; j++) {
+                    const pixelIndex = (j * image_width * population + i + image_width * k + image_width * population * 2 * image_height) * 4;
+                    //p.pixels[pixelIndex + 0] = p.pixels[(i * image_width * 4 + j) * 4 + 0]; // Red
+                    //p.pixels[pixelIndex + 1] = p.pixels[(i * image_width * 4 + j) * 4 + 1]; // Red
+                    //p.pixels[pixelIndex + 2] = p.pixels[(i * image_width * 4 + j) * 4 + 2]; // Red
+                    //p.pixels[pixelIndex + 3] = p.pixels[(i * image_width * 4 + j) * 4 + 3]; // Red
+                    //console.log("rgba: ", _img[i * image_width + j + 0], _img[i * image_width + j + 1], _img[i * image_width + j + 2], _img[i * image_width + j + 3])
+                    p.pixels[pixelIndex + 0] = _img[(j * image_width + i) * 4 + 0]; // Red
+                    p.pixels[pixelIndex + 1] = _img[(j * image_width + i) * 4 + 1]; // Green
+                    p.pixels[pixelIndex + 2] = _img[(j * image_width + i) * 4 + 2]; // Blue
+                    p.pixels[pixelIndex + 3] = _img[(j * image_width + i) * 4 + 3]; // Alpha
+                }
             }
         }
         p.updatePixels();*/
