@@ -40,7 +40,7 @@ const sketch = (p: p5) => {
         const new_genomes: Genome[] = [];
         for (let i = 0; i < population; i++) {
             // 選択
-            const parent_idx1 = Math.floor(Math.random() * population);
+            const parent_idx1 = Math.floor(Math.random() * next_generation_of_best);
             const parent_idx2 = Math.floor(Math.random() * population);
 
             // 交叉
