@@ -158,8 +158,8 @@ const sketch = (p: p5) => {
         crossover(other: Genome): Genome {
             const lines: Line[] = [];
             other.lines.forEach((line, i) => {
-                const start = this.lines[i].start.add(p.createVector(Math.random() - 0.5, Math.random() - 0.5).mult(line.start));
-                const end = this.lines[i].end.add(p.createVector(Math.random() - 0.5, Math.random() - 0.5).mult(line.end));
+                const start = p5.Vector.add(this.lines[i].start, p.createVector(Math.random() - 0.5, Math.random() - 0.5).mult(line.start));
+                const end = p5.Vector.add(this.lines[i].end, p.createVector(Math.random() - 0.5, Math.random() - 0.5).mult(line.end));
                 const red = p.red(this.lines[i].color) + p.red(line.color) * (Math.random() * 2 - 1.0);
                 const green = p.green(this.lines[i].color) + p.green(line.color) * (Math.random() * 2 - 1.0);
                 const blue = p.blue(this.lines[i].color) + p.blue(line.color) * (Math.random() * 2 - 1.0);
