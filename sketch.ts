@@ -3,6 +3,7 @@ import p5 from 'p5'
 import target_image from './red.jpg'
 
 const population = 10;
+const next_generation_of_best = 3;
 
 const sketch = (p: p5) => {
     let img: p5.Image;
@@ -82,13 +83,21 @@ const sketch = (p: p5) => {
 
 
         // 次世代を選択
+        // 上位5個体を次世代に残し、残りの5個体は上位5個体を除きランダムに選択する。
         genomes = genomes.concat(new_genomes);
         genomes.sort((a, b) => {
             const fitness_a = a.fitness === null ? 999999999 : a.fitness;
             const fitness_b = b.fitness === null ? 999999999 : b.fitness;
             return fitness_a - fitness_b;
         })
-        genomes.splice(population, genomes.length - population);
+        const next_generation = [];
+        for (let i = 0; i < population; i++) {
+            if (i < next_generation_of_best) {
+                next_generation.push(genomes[i]);
+            } else {
+                next_generation.push(genomes[Math.floor(Math.random() * (population - next_generation_of_best) + next_generation_of_best)]);
+            }
+        }
         genomes[0].show(image_width, 0);
         const fitnesses = genomes.map(genome => genome.fitness);
         console.log("after fitness: ", fitnesses);
