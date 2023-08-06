@@ -3,6 +3,7 @@ import p5 from 'p5'
 import target_image from './red.jpg'
 
 const population = 10;
+const next_generation_of_best = 3;
 
 const sketch = (p: p5) => {
     let img: p5.Image;
@@ -39,7 +40,7 @@ const sketch = (p: p5) => {
         const new_genomes: Genome[] = [];
         for (let i = 0; i < population; i++) {
             // 選択
-            const parent_idx1 = Math.floor(Math.random() * population);
+            const parent_idx1 = Math.floor(Math.random() * next_generation_of_best);
             const parent_idx2 = Math.floor(Math.random() * population);
 
             // 交叉
@@ -82,16 +83,28 @@ const sketch = (p: p5) => {
 
 
         // 次世代を選択
+        // 上位5個体を次世代に残し、残りの5個体は上位5個体を除きランダムに選択する。
         genomes = genomes.concat(new_genomes);
         genomes.sort((a, b) => {
             const fitness_a = a.fitness === null ? 999999999 : a.fitness;
             const fitness_b = b.fitness === null ? 999999999 : b.fitness;
             return fitness_a - fitness_b;
         })
-        genomes.splice(population, genomes.length - population);
+        const next_generation = [];
+        for (let i = 0; i < population; i++) {
+            if (i < next_generation_of_best) {
+                next_generation.push(genomes[0]);
+                genomes.splice(0, 1);
+            } else {
+                const idx = Math.floor(Math.random() * (population - next_generation_of_best) + next_generation_of_best);
+                next_generation.push(genomes[idx]);
+                genomes.splice(idx, 1);
+            }
+        }
+        genomes = next_generation;
         genomes[0].show(image_width, 0);
         const fitnesses = genomes.map(genome => genome.fitness);
-        console.log("after fitness: ", fitnesses);
+        console.log("next generation fitness: ", fitnesses);
     }
 
     const get_image_pixels = (img: number[], idx: number): number[] => {
