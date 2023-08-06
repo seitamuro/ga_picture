@@ -88,7 +88,8 @@ const sketch = (p: p5) => {
         })
         genomes.splice(population, genomes.length - population);
         genomes[0].show(image_width, 0);
-        console.log("after fitness: ", genomes[0].fitness);
+        const fitnesses = genomes.map(genome => genome.fitness);
+        console.log("after fitness: ", fitnesses);
     }
 
     const get_image_pixels = (img: number[], idx: number): number[] => {
