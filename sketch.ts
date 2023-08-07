@@ -5,6 +5,7 @@ import target_image from './red.jpg'
 const population = 20;
 const next_generation_of_best = 3;
 const crossover_variation = 0.1;
+const crossover_rate = 0.8;
 const mutation_variation = 0.1;
 const mutation_rate = 0.01;
 
@@ -174,11 +175,28 @@ const sketch = (p: p5) => {
         crossover(other: Genome): Genome {
             const lines: Line[] = [];
             other.lines.forEach((line, i) => {
-                const start = p5.Vector.add(this.lines[i].start, p.createVector(-MyRandom() * 2 * crossover_variation + crossover_variation, MyRandom() * 2 * crossover_variation - crossover_variation).mult(line.start));
-                const end = p5.Vector.add(this.lines[i].end, p.createVector(-MyRandom() * 2 * crossover_variation + crossover_variation, MyRandom() * 2 * crossover_variation - crossover_variation).mult(line.end));
-                const red = p.red(this.lines[i].color) + p.red(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
-                const green = p.green(this.lines[i].color) + p.green(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
-                const blue = p.blue(this.lines[i].color) + p.blue(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
+                let start = this.lines[i].start;
+                if (MyRandom() < crossover_rate) {
+                    start = p5.Vector.add(this.lines[i].start, p.createVector(-MyRandom() * 2 * crossover_variation + crossover_variation, MyRandom() * 2 * crossover_variation - crossover_variation).mult(line.start));
+                }
+
+                let end = this.lines[i].end;
+                if (MyRandom() < crossover_rate) {
+                    end = p5.Vector.add(this.lines[i].end, p.createVector(-MyRandom() * 2 * crossover_variation + crossover_variation, MyRandom() * 2 * crossover_variation - crossover_variation).mult(line.end));
+                }
+
+                let red = p.red(this.lines[i].color);
+                if (MyRandom() < crossover_rate) {
+                    red = p.red(this.lines[i].color) + p.red(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
+                }
+                let green = p.green(this.lines[i].color);
+                if (MyRandom() < crossover_rate) {
+                    green = p.green(this.lines[i].color) + p.green(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
+                }
+                let blue = p.blue(this.lines[i].color);
+                if (MyRandom() < crossover_rate) {
+                    blue = p.blue(this.lines[i].color) + p.blue(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
+                }
                 const color = p.color(red, green, blue);
 
                 const clipped_start = clip_vector2D(start);
