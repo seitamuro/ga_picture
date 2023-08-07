@@ -2,8 +2,12 @@ import p5 from 'p5'
 
 import target_image from './red.jpg'
 
-const population = 10;
+const population = 20;
 const next_generation_of_best = 3;
+const crossover_variation = 0.1;
+const crossover_rate = 0.8;
+const mutation_variation = 0.1;
+const mutation_rate = 0.01;
 
 const sketch = (p: p5) => {
     let img: p5.Image;
@@ -40,8 +44,8 @@ const sketch = (p: p5) => {
         const new_genomes: Genome[] = [];
         for (let i = 0; i < population; i++) {
             // 選択
-            const parent_idx1 = Math.floor(Math.random() * next_generation_of_best);
-            const parent_idx2 = Math.floor(Math.random() * population);
+            const parent_idx1 = Math.floor(MyRandom() * next_generation_of_best);
+            const parent_idx2 = Math.floor(MyRandom() * population);
 
             // 交叉
             new_genomes.push(genomes[parent_idx1].crossover(genomes[parent_idx2]));
@@ -86,8 +90,8 @@ const sketch = (p: p5) => {
         // 上位5個体を次世代に残し、残りの5個体は上位5個体を除きランダムに選択する。
         genomes = genomes.concat(new_genomes);
         genomes.sort((a, b) => {
-            const fitness_a = a.fitness === null ? 999999999 : a.fitness;
-            const fitness_b = b.fitness === null ? 999999999 : b.fitness;
+            const fitness_a = a.fitness === null ? 99999999999999 : a.fitness;
+            const fitness_b = b.fitness === null ? 99999999999999 : b.fitness;
             return fitness_a - fitness_b;
         })
         const next_generation = [];
@@ -96,7 +100,7 @@ const sketch = (p: p5) => {
                 next_generation.push(genomes[0]);
                 genomes.splice(0, 1);
             } else {
-                const idx = Math.floor(Math.random() * (population - next_generation_of_best) + next_generation_of_best);
+                const idx = Math.floor(MyRandom() * (population - next_generation_of_best) + next_generation_of_best);
                 next_generation.push(genomes[idx]);
                 genomes.splice(idx, 1);
             }
@@ -160,9 +164,9 @@ const sketch = (p: p5) => {
         create_random_lines(): Lines {
             const lines: Line[] = [];
             for (let i = 0; i < 500; i++) {
-                const start = p.createVector(Math.random(), Math.random());
-                const end = p.createVector(Math.random(), Math.random());
-                const color = p.color(Math.random() * 255, Math.random() * 255, Math.random() * 255);
+                const start = p.createVector(MyRandom(), MyRandom());
+                const end = p.createVector(MyRandom(), MyRandom());
+                const color = p.color(MyRandom() * 255, MyRandom() * 255, MyRandom() * 255);
                 lines.push(new Line(start, end, color));
             }
             return lines as Lines;
@@ -171,11 +175,28 @@ const sketch = (p: p5) => {
         crossover(other: Genome): Genome {
             const lines: Line[] = [];
             other.lines.forEach((line, i) => {
-                const start = p5.Vector.add(this.lines[i].start, p.createVector(Math.random() - 0.5, Math.random() - 0.5).mult(line.start));
-                const end = p5.Vector.add(this.lines[i].end, p.createVector(Math.random() - 0.5, Math.random() - 0.5).mult(line.end));
-                const red = p.red(this.lines[i].color) + p.red(line.color) * (Math.random() * 2 - 1.0);
-                const green = p.green(this.lines[i].color) + p.green(line.color) * (Math.random() * 2 - 1.0);
-                const blue = p.blue(this.lines[i].color) + p.blue(line.color) * (Math.random() * 2 - 1.0);
+                let start = this.lines[i].start;
+                if (MyRandom() < crossover_rate) {
+                    start = p5.Vector.add(this.lines[i].start, p.createVector(-MyRandom() * 2 * crossover_variation + crossover_variation, MyRandom() * 2 * crossover_variation - crossover_variation).mult(line.start));
+                }
+
+                let end = this.lines[i].end;
+                if (MyRandom() < crossover_rate) {
+                    end = p5.Vector.add(this.lines[i].end, p.createVector(-MyRandom() * 2 * crossover_variation + crossover_variation, MyRandom() * 2 * crossover_variation - crossover_variation).mult(line.end));
+                }
+
+                let red = p.red(this.lines[i].color);
+                if (MyRandom() < crossover_rate) {
+                    red = p.red(this.lines[i].color) + p.red(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
+                }
+                let green = p.green(this.lines[i].color);
+                if (MyRandom() < crossover_rate) {
+                    green = p.green(this.lines[i].color) + p.green(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
+                }
+                let blue = p.blue(this.lines[i].color);
+                if (MyRandom() < crossover_rate) {
+                    blue = p.blue(this.lines[i].color) + p.blue(line.color) * (-MyRandom() * 2 * crossover_variation + crossover_variation);
+                }
                 const color = p.color(red, green, blue);
 
                 const clipped_start = clip_vector2D(start);
@@ -190,14 +211,17 @@ const sketch = (p: p5) => {
 
         mutation() {
             this.lines.forEach((line) => {
-                if (Math.random() < 0.001) {
-                    line.start = p.createVector(Math.random(), Math.random());
+                if (MyRandom() < mutation_rate) {
+                    line.start.mult(p.createVector(-MyRandom() * 2 * mutation_variation + mutation_variation, MyRandom() * 2 * mutation_variation - mutation_variation));
                 }
-                if (Math.random() < 0.001) {
-                    line.end = p.createVector(Math.random(), Math.random());
+                if (MyRandom() < mutation_rate) {
+                    line.end.mult(p.createVector(-MyRandom() * 2 * mutation_variation + mutation_variation, MyRandom() * 2 * mutation_variation - mutation_variation));
                 }
-                if (Math.random() < 0.001) {
-                    line.color = p.color(Math.random() * 255, Math.random() * 255, Math.random() * 255);
+                if (MyRandom() < mutation_rate) {
+                    const red = p.red(line.color) + (-MyRandom() * 2 * mutation_variation + mutation_variation);
+                    const green = p.green(line.color) + (-MyRandom() * 2 * mutation_variation + mutation_variation);
+                    const blue = p.blue(line.color) + (-MyRandom() * 2 * mutation_variation + mutation_variation);
+                    line.color = p.color(red, green, blue);
                 }
             })
         }
@@ -225,10 +249,15 @@ const sketch = (p: p5) => {
 
     const fitness = (img1: number[], img2: number[]): number => {
         let sum = 0;
-        for (let i = 0; i < img1.length; i += 4) {
+        for (let i = 0; i < img1.length; i++) {
+            if (i % 4 === 3) continue;
             sum += Math.abs(img1[i] - img2[i]) ^ 2;
         }
         return sum;
+    }
+
+    const MyRandom = (): number => {
+        return p.random();
     }
 }
 
