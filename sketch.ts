@@ -6,6 +6,7 @@ const population = 20;
 const next_generation_of_best = 3;
 const crossover_variation = 0.1;
 const mutation_variation = 0.1;
+const mutation_rate = 0.01;
 
 const sketch = (p: p5) => {
     let img: p5.Image;
@@ -192,13 +193,13 @@ const sketch = (p: p5) => {
 
         mutation() {
             this.lines.forEach((line) => {
-                if (MyRandom() < 0.001) {
+                if (MyRandom() < mutation_rate) {
                     line.start.mult(p.createVector(-MyRandom() * 2 * mutation_variation + mutation_variation, MyRandom() * 2 * mutation_variation - mutation_variation));
                 }
-                if (MyRandom() < 0.001) {
+                if (MyRandom() < mutation_rate) {
                     line.end.mult(p.createVector(-MyRandom() * 2 * mutation_variation + mutation_variation, MyRandom() * 2 * mutation_variation - mutation_variation));
                 }
-                if (MyRandom() < 0.001) {
+                if (MyRandom() < mutation_rate) {
                     const red = p.red(line.color) + (-MyRandom() * 2 * mutation_variation + mutation_variation);
                     const green = p.green(line.color) + (-MyRandom() * 2 * mutation_variation + mutation_variation);
                     const blue = p.blue(line.color) + (-MyRandom() * 2 * mutation_variation + mutation_variation);
