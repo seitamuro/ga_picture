@@ -212,10 +212,10 @@ const sketch = (p: p5) => {
         mutation() {
             this.lines.forEach((line) => {
                 if (MyRandom() < mutation_rate) {
-                    line.start.mult(p.createVector(-MyRandom() * 2 * mutation_variation + mutation_variation, MyRandom() * 2 * mutation_variation - mutation_variation));
+                    line.start.add(p.createVector(-MyRandom() * 2 * mutation_variation + mutation_variation, MyRandom() * 2 * mutation_variation - mutation_variation));
                 }
                 if (MyRandom() < mutation_rate) {
-                    line.end.mult(p.createVector(-MyRandom() * 2 * mutation_variation + mutation_variation, MyRandom() * 2 * mutation_variation - mutation_variation));
+                    line.end.add(p.createVector(-MyRandom() * 2 * mutation_variation + mutation_variation, MyRandom() * 2 * mutation_variation - mutation_variation));
                 }
                 if (MyRandom() < mutation_rate) {
                     const red = p.red(line.color) + (-MyRandom() * 2 * mutation_variation + mutation_variation);
